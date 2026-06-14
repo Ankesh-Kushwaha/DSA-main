@@ -1,74 +1,118 @@
 #include<bits/stdc++.h>
 using namespace std;
 
+class LRU_Cache
+{
+  list<int> dll; // front = MRU, back = LRU
 
-class LRU_Cache{
-  list<int> dll;//store front as most recently used key
-  // cahce store the value and address of each node for O(1) lookup;
+  // key -> {iterator in list, value}
   unordered_map<int, pair<list<int>::iterator, int>> cache;
-  int capapcity;
 
+  int capacity;
 
 public:
-  LRU_Cache(int capacity){
-    this->capapcity = capacity;
-  }
-  
-  void makeRecentlyUsed(int key){
-     //first erase it from the list
-     dll.erase(cache[key].first);
-     //now push it in the front to mark it recently used
-     dll.push_front(key);
-     // now update the address of the key into the cahce;
-     cache[key].first = dll.begin();
+  LRU_Cache(int capacity)
+  {
+    this->capacity = capacity;
   }
 
-  // get the key from the  cache and its value;
-  int get(int key){
-      if(cache.find(key)==cache.end()) return -1;
-      // get the key and return its values from the map;
-      int val=cache[key].second;
-      //since this is recently used put it to the front
+  void makeRecentlyUsed(int key)
+  {
+    dll.erase(cache[key].first);
+
+    dll.push_front(key);
+
+    cache[key].first = dll.begin();
+  }
+
+  int get(int key)
+  {
+    if (cache.find(key) == cache.end())
+      return -1;
+
+    makeRecentlyUsed(key);
+
+    return cache[key].second;
+  }
+
+  void put(int key, int value)
+  {
+
+    // Key already exists
+    if (cache.find(key) != cache.end())
+    {
+      cache[key].second = value;
       makeRecentlyUsed(key);
-      return val;
+      return;
+    }
+
+    // Insert new key
+    dll.push_front(key);
+    cache[key] = {dll.begin(), value};
+
+    // Evict LRU if capacity exceeded
+    if (cache.size() > capacity)
+    {
+      int lruKey = dll.back();
+
+      dll.pop_back();
+
+      cache.erase(lruKey);
+    }
   }
 
-  void put(int key,int value){
-      //if the key is present then update it and make it recently used 
-      if(cache.find(key)!=cache.end()){
-         //update the value;
-          cache[key].second=value;
-          //mark it recently used
-          makeRecentlyUsed(key);
-      }
-      else{
-        //push it in the front 
-        dll.push_front(key);
-        // store its address and value in the cache;
-        cache[key] = {dll.begin(), value};
-        capapcity--;
-      }
-      
-      if(capapcity<0){ //remove the most recently used element
-        int key_to_be_deleted = dll.back();
-        dll.pop_back();
-        cache.erase(key_to_be_deleted);
-      }
-      
+  void display()
+  {
+    cout << "Cache State (MRU -> LRU): ";
+
+    for (auto key : dll)
+    {
+      cout << "(" << key << "," << cache[key].second << ") ";
+    }
+
+    cout << '\n';
   }
 };
 
 int main(){
   LRU_Cache cache(2);
 
-  cache.put(1, 1);
-  cache.put(2,2);
-  cout<<cache.get(1)<<endl;
-  cache.put(3,3);
-  cout<<cache.get(2)<<endl;
-  cache.put(4,4);
-  cout<<cache.get(1)<<endl;
-  cout<<cache.get(3)<<endl;
-  cout << cache.get(4) << endl;
+  // cache.put(1, 1);
+  // cache.put(2,2);
+  // cout<<cache.get(1)<<endl;
+  // cache.put(3,3);
+  // cout<<cache.get(2)<<endl;
+  // cache.put(4,4);
+  // cout<<cache.get(1)<<endl;
+  // cout<<cache.get(3)<<endl;
+  // cout << cache.get(4) << endl;
+
+  int t;
+  cin >> t;
+  cin.ignore(); //ignore the newline
+
+  //take input 
+  while(t--){
+    string line;
+    getline(cin, line);
+
+    //convert it into the stream
+    stringstream ss(line);
+    string ops;
+    ss >> ops;
+
+    if(ops=="get"){
+      string val;
+      ss >> val;
+      cout<<cache.get(stoi(val))<<endl;
+    }
+    else{
+      string key, val;
+      ss >> key;
+      ss >> val;
+
+      cache.put(stoi(key), stoi(val));
+    }
+  }
   return 0;
 }
