@@ -1,0 +1,1 @@
+{"name":"Local: TreeRevision","url":"c:\\Users\\ankes\\Desktop\\DSA\\companies_questions.cpp\\TreeRevision.cpp","tests":[{"id":1787675955802,"input":"\"1 2 3 4 5 6\"","output":"1 2 4 5 3 6"}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"c:\\Users\\ankes\\Desktop\\DSA\\companies_questions.cpp\\TreeRevision.cpp","group":"local","local":true}
